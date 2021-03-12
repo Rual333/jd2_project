@@ -1,24 +1,27 @@
 package by.it.academy.cv.data;
 
 import by.it.academy.cv.model.JobCandidate;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 @Repository
 public class JobCandidateDaoIml implements JobCandidateDao{
 
-    @PersistenceContext
-    EntityManager em;
+    @Autowired
+    private SessionFactory sessionFactory;
 
     @Override
     public void save(JobCandidate jobCandidate) {
-        em.persist(jobCandidate);
+        final Session currentSession = sessionFactory.getCurrentSession();
+        currentSession.save(jobCandidate);
     }
 
     @Override
     public JobCandidate read(long id) {
-        return em.find(JobCandidate.class, id);
+        final Session currentSession = sessionFactory.getCurrentSession();
+        return currentSession.get(JobCandidate.class, id);
     }
+
 }

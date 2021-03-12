@@ -31,14 +31,17 @@ public class JobCandidate {
     private String patronymic;
 
     @Column(name = "F_DATE_OF_BIRTH")
+//    @OneToOne()
+//    @MapsId
+//    @Embedded
+//    @PrimaryKeyJoinColumn
     private Date dateOfBirth;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
     @ManyToOne
     @JoinColumn(name = "GENDER_ID")
     private Gender gender;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
     @JoinTable(name = "T_JOB_CANDIDATES_TECHNOLOGIES",
             joinColumns = @JoinColumn(name = "JOB_CANDIDATE_ID"),
             inverseJoinColumns = @JoinColumn(name = "TECHNOLOGY_ID"))

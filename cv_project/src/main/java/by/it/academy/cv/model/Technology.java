@@ -19,8 +19,8 @@ public class Technology {
     @Column(name="TECHNOLOGY_ID")
     private Integer technologyId;
 
-    @Column(name = "F_CONTACT_NAME")
-    private String contactName;
+    @Column(name = "F_TECHNOLOGY_NAME")
+    private String technologyName;
 
     @ManyToMany(mappedBy = "technologies")
     private List<JobCandidate> jobCandidates;
