@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-public class BuilderJoinOnHandler {
+public class SQLBuilderJoinOnHandler {
 
 
     private final EntityNamesScanner entityNamesScanner;
@@ -24,7 +24,7 @@ public class BuilderJoinOnHandler {
     private String inverseJoinColumnName;
     private Set<String> primaryKeyWithTableNames;
 
-    public BuilderJoinOnHandler() {
+    public SQLBuilderJoinOnHandler() {
         entityNamesScanner = new EntityNamesScanner();
         fieldClassScanner = new EntityFieldsScanner();
         primaryKeyWithTableNames = new HashSet<>();

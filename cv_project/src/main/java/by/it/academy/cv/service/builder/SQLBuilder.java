@@ -2,64 +2,61 @@ package by.it.academy.cv.service.builder;
 
 import by.it.academy.cv.exeptions.IncorrectBuildingUsage;
 import by.it.academy.cv.exeptions.IncorrectEntityDefinitionExpression;
-import by.it.academy.cv.service.entityscanner.EntitiesScannedInformation;
+import by.it.academy.cv.service.entityscanner.EntityScannerForSQL;
+import by.it.academy.cv.service.entityscanner.ScannedEntityInformationForSQL;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class SQLBuilder {
+public class SQLBuilder implements Builder {
 
-    private EntitiesScannedInformation eScannedInfo;
+    private ScannedEntityInformationForSQL entityInformation;
     private StringBuilder select;
     private StringBuilder from;
     private StringBuilder join;
     private StringBuilder where;
     private StringBuilder groupBy;
     private StringBuilder having;
-    private BuilderJoinOnHandler builderJoinOnHandler;
-    private List<String> parameters;
+    private SQLBuilderJoinOnHandler SQLBuilderJoinOnHandler;
     private boolean ifItsWhere;
+    private SQLBuiilderResultQueryAndParams resultQueryAndParams;
 
     public SQLBuilder(Class<?> entityClass) throws IncorrectEntityDefinitionExpression {
         init(entityClass);
     }
 
     private void init(Class<?> entityClass) throws IncorrectEntityDefinitionExpression {
-        eScannedInfo = new EntitiesScannedInformation(entityClass);
+        entityInformation = new EntityScannerForSQL().scan(entityClass);
         join = new StringBuilder();
         where = new StringBuilder();
         groupBy = new StringBuilder();
         having = new StringBuilder();
         ifItsWhere = true;
-        builderJoinOnHandler = new BuilderJoinOnHandler();
-        parameters = new ArrayList<>();
-        createSelectFrom();
+        SQLBuilderJoinOnHandler = new SQLBuilderJoinOnHandler();
+        resultQueryAndParams = new SQLBuiilderResultQueryAndParams();
+        createSelectAndFrom();
         createJoinOn();
         setPrimaryKeysToSelect();
     }
 
-    private void createSelectFrom() {
-        String columnNames = eScannedInfo.getFieldsNamesToColumnsNamesMap().values().toString();
+    private void createSelectAndFrom() {
+        String columnNames = entityInformation.getFieldNameToColumnNameMap().values().toString();
         select = new StringBuilder();
         from = new StringBuilder();
         select.append("SELECT ")
                 .append(columnNames, 1, columnNames.length() - 1);
         from.append(" FROM ")
-                .append(eScannedInfo.getTableName().trim());
-//        .append(" left outer join T_GENDERS gender1_ on T_JOB_CANDIDATES.GENDER_ID=gender1_.GENDER_ID");
+                .append(entityInformation.getRootTableName().trim());
     }
 
     private void setPrimaryKeysToSelect() {
-        builderJoinOnHandler.getPrimaryKeyWithTableNames().forEach(pk -> {
-            select.append(",")
-                    .append(pk);
-        });
+        SQLBuilderJoinOnHandler.getPrimaryKeyWithTableNames().forEach(pk -> select.append(",")
+                .append(pk));
     }
 
     private void createJoinOn() {
-        eScannedInfo.getAllRelatedFields().forEach(field -> {
+        entityInformation.getAllRelatedFields().forEach(field -> {
             try {
-                join.append(builderJoinOnHandler.getJoinOnCondition(field));
+                join.append(SQLBuilderJoinOnHandler.getJoinOnCondition(field));
             } catch (IncorrectEntityDefinitionExpression incorrectEntityDefinitionExpression) {
                 incorrectEntityDefinitionExpression.printStackTrace();
             }
@@ -136,7 +133,7 @@ public class SQLBuilder {
             throw new IncorrectBuildingUsage("parameters has not to be null");
         }
         parameter = "'" + parameter + "'";
-//        System.out.println(parameter);
+        resultQueryAndParams.addParameter(fieldName+condition+parameter);
         if (ifItsWhere) {
             return addConditionToWhere(fieldName, condition, parameter);
         } else {
@@ -165,27 +162,11 @@ public class SQLBuilder {
         return this;
     }
 
-    public SQLQueryAndParams build() throws IncorrectBuildingUsage {
-        lastCharacterHasNotToBeSpace(where);
-        lastCharacterHasNotToBeSpace(having);
-        StringBuilder resultQuery = select
-                .append(from)
-                .append(join)
-                .append(where)
-                .append(groupBy)
-                .append(having)
-                .append(";");
-        return new SQLQueryAndParams(parameters, resultQuery.toString());
-    }
-
     private String getColumnName(String fieldName) throws IncorrectBuildingUsage {
-        String columnName = eScannedInfo.getFieldsNamesToColumnsNamesMap().get(fieldName.trim());
-//        System.out.println(eScannedInfo.getFieldsNamesToColumnsNamesMap().values());
-//        System.out.println();
-//        System.out.println(fieldName);
+        String columnName = entityInformation.getFieldNameToColumnNameMap().get(fieldName.trim());
         if (columnName == null) {
             throw new IncorrectBuildingUsage("There is no such field name, available fields name: "+
-                    eScannedInfo.getFieldsNamesToColumnsNamesMap().keySet());
+                    entityInformation.getFieldNameToColumnNameMap().keySet());
         }
         return columnName.trim();
     }
@@ -223,6 +204,37 @@ public class SQLBuilder {
                 "Don't use operators one after another without condition between them." +
                 "Don't use conditions one after another without operators between them." +
                 "Don't use operators before build() method. ";
+    }
+
+    @Override
+    public void build() throws IncorrectBuildingUsage {
+        if(resultQueryAndParams.getQuery() != null) {
+           throw new IncorrectBuildingUsage("The build() method have already used");
+        }
+        checkBeforeBuild();
+        StringBuilder resultQuery = select
+                    .append(from)
+                    .append(join)
+                    .append(where)
+                    .append(groupBy)
+                    .append(having)
+                    .append(";");
+        resultQueryAndParams.setQuery(resultQuery.toString());
+        }
+
+        private void checkBeforeBuild() throws IncorrectBuildingUsage {
+            lastCharacterHasNotToBeSpace(having);
+            lastCharacterHasNotToBeSpace(where);
+        }
+
+    @Override
+    public String getResultQuery() {
+        return resultQueryAndParams.getQuery();
+    }
+
+    @Override
+    public List<String> getQueryParameters() {
+        return resultQueryAndParams.getParameters();
     }
 
 }

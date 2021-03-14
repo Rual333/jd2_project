@@ -27,7 +27,7 @@ public class EntityNamesScanner {
         return tableName;
     }
 
-    public void scanFieldsNamesToColumnsNames(Class entityClass, Map<String, String> FieldNameToColumnNameMap) {
+    public void scanAndAddToFieldsNamesToColumnsNamesMap(Class<?> entityClass, Map<String, String> FieldNameToColumnNameMap) {
         Field[] entityFields = entityClass.getDeclaredFields();
         for (Field field : entityFields) {
             if (field.isAnnotationPresent(Column.class) && !field.isAnnotationPresent(Id.class)) {

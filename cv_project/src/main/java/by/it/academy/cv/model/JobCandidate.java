@@ -21,23 +21,23 @@ public class JobCandidate {
     @Column(name = "JOB_CANDIDATE_ID")
     private Long jobCandidateId;
 
-    @Column(name = "F_FIRST_NAME")
+    @Column(name = "F_FIRST_NAME", nullable = false)
     private String firstName;
 
-    @Column(name = "F_LAST_NAME")
+    @Column(name = "F_LAST_NAME", nullable = false)
     private String lastName;
 
-    @Column(name = "F_PATRONYMIC")
+    @Column(name = "F_PATRONYMIC", nullable = false)
     private String patronymic;
 
-    @Column(name = "F_DATE_OF_BIRTH")
+    @Column(name = "F_DATE_OF_BIRTH", nullable = false)
     private Date dateOfBirth;
 
     @ManyToOne
-    @JoinColumn(name = "GENDER_ID")
+    @JoinColumn(name = "GENDER_ID", nullable = false)
     private Gender gender;
 
-    @ManyToMany(fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "T_JOB_CANDIDATES_TECHNOLOGIES",
             joinColumns = @JoinColumn(name = "JOB_CANDIDATE_ID"),
             inverseJoinColumns = @JoinColumn(name = "TECHNOLOGY_ID"))

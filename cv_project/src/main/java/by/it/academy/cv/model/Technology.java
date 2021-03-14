@@ -17,9 +17,9 @@ public class Technology {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="TECHNOLOGY_ID")
-    private Integer technologyId;
+    private Long technologyId;
 
-    @Column(name = "F_TECHNOLOGY_NAME")
+    @Column(name = "F_TECHNOLOGY_NAME", nullable = false)
     private String technologyName;
 
     @ManyToMany(mappedBy = "technologies")

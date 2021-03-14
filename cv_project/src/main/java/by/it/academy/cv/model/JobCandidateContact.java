@@ -17,9 +17,9 @@ public class JobCandidateContact {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="CONTACT_ID")
-    private Integer jobCandidateContactId;
+    private Long jobCandidateContactId;
 
-    @Column(name = "F_CONTACT_NAME")
+    @Column(name = "F_CONTACT_NAME", nullable = false)
     private String jobCandidateContactName;
 
     @ManyToOne

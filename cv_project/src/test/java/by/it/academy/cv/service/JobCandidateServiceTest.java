@@ -3,13 +3,10 @@ package by.it.academy.cv.service;
 import by.it.academy.cv.TestConfiguration;
 import by.it.academy.cv.exeptions.IncorrectBuildingUsage;
 import by.it.academy.cv.exeptions.IncorrectEntityDefinitionExpression;
-import by.it.academy.cv.model.Gender;
 import by.it.academy.cv.model.JobCandidate;
-import by.it.academy.cv.model.JobCandidateContact;
-import by.it.academy.cv.model.Technology;
+import by.it.academy.cv.service.builder.QueryGenerator;
 import by.it.academy.cv.service.builder.SQLBuilder;
 import junit.framework.TestCase;
-import org.apache.poi.ss.formula.functions.T;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -20,13 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 
 @ContextConfiguration(classes = TestConfiguration.class)
@@ -39,45 +30,65 @@ public class JobCandidateServiceTest extends TestCase {
     @Autowired
     JobCandidateService jobCandidateService;
 
+    Logger logger = Logger.getLogger(getClass().getName());
 
-        @Test
-        @Transactional
-        public void testsFromTaskDefinition () throws IncorrectEntityDefinitionExpression, IncorrectBuildingUsage {
-            //Given
-            final Session currentSession = sessionFactory.getCurrentSession();
-//
-            //When
-            SQLBuilder sqlBuilder = new SQLBuilder(JobCandidate.class);
-            final String query= sqlBuilder.like("lastName", "%ов")
-                    .or()
-                    .equal("genderName", "женщина")
-                    .build().getQuery();
+    @Test
+    @Transactional
+    public void test1FromTaskDefinition() throws IncorrectEntityDefinitionExpression, IncorrectBuildingUsage {
+        //Given
+        Session currentSession = sessionFactory.getCurrentSession();
+        SQLBuilder sqlBuilder = new SQLBuilder(JobCandidate.class);
 
-            System.out.println(query);
+        //When
 
-            final List list = currentSession
-                    .createSQLQuery(query)
-                    .addEntity(JobCandidate.class)
-                    .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
-                    .list();
+        sqlBuilder.equal("lastName", "Морская")
+                .and()
+                .equal("patronymic", "Васильевна")
+                .and()
+                .equal("firstName", "Мария");
 
-            sqlBuilder = new SQLBuilder(JobCandidate.class);
-            final String query1 = sqlBuilder.equal("lastName", "Петров")
-                    .and()
-                    .equal("patronymic", "Петрович")
-                    .and()
-                    .equal("firstName", "Петр").build().getQuery();
+        QueryGenerator queryGenerator= new QueryGenerator(sqlBuilder);
 
-            final List list1 = currentSession
-                    .createSQLQuery(query1)
-                    .addEntity(JobCandidate.class)
-                    .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
-                    .list();
+        String query = queryGenerator.getResultQuery();
 
-            System.out.println(list);
-            System.out.println(list1);
+        final List list = currentSession
+                .createSQLQuery(query)
+                .addEntity(JobCandidate.class)
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+                .getResultList();
 
-            assertEquals(1, list1.size());
-            assertEquals(3, list.size());
-        }
+        //Then
+        logger.info("Query from SQLBuilder: " + query);
+        logger.info("Parameters: " + queryGenerator.getParams());
+        assertEquals(1, list.size());
+        JobCandidate result = (JobCandidate) list.get(0);
+        long resultId = result.getJobCandidateId();
+        assertEquals(3L, resultId);
     }
+
+    @Test
+    @Transactional
+    public void test2FromTaskDefinition() throws IncorrectEntityDefinitionExpression, IncorrectBuildingUsage {
+        //Given
+        final Session currentSession = sessionFactory.getCurrentSession();
+
+        //When
+        SQLBuilder sqlBuilder = new SQLBuilder(JobCandidate.class);
+        sqlBuilder.like("lastName", "%ов")
+                .or()
+                .equal("genderName", "женщина");
+
+        System.out.println(sqlBuilder.getResultQuery());
+        QueryGenerator queryGenerator=new QueryGenerator(sqlBuilder);
+        String result = queryGenerator.getResultQuery();
+
+        System.out.println(result);
+        final List list = currentSession
+                .createSQLQuery(result)
+                .addEntity(JobCandidate.class)
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+                .list();
+        //Then
+        assertEquals(3, list.size());
+    }
+}

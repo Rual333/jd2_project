@@ -38,29 +38,17 @@ public class DaoConfiguration {
     @Bean
     public DataSource dataSource() {
 
-        BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setUrl(environment.getProperty("datasource.url"));
-        dataSource.setDriverClassName(Driver.class.getName());
-        dataSource.setUsername(environment.getProperty("datasource.username"));
-        dataSource.setPassword(environment.getProperty("datasource.password"));
-        dataSource.setInitialSize(20);
-        dataSource.setMaxTotal(30);
-        return dataSource;
-
-
-//        HikariConfig config = new HikariConfig();
-//        config.setJdbcUrl( "jdbc:mysql://localhost:3306/curriculum_vitaes?" +
-//                "serverTimezone=UTC&" +
-//                "createDatabaseIfNotExist=true&" +
-//                "useUnicode=true&characterEncoding=UTF-8" );
-//        config.setUsername( "root" );
-//        config.setPassword( "root" );
-//        config.addDataSourceProperty( "cachePrepStmts" , "true" );
-//        config.addDataSourceProperty( "prepStmtCacheSize" , "250" );
-//        config.addDataSourceProperty( "prepStmtCacheSqlLimit" , "2048" );
-//        HikariDataSource dataSource = new HikariDataSource(config);
-//        dataSource.setDriverClassName(Driver.class.getName());
-//        return dataSource;
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl( "jdbc:mysql://localhost:3306/curriculum_vitaes?" +
+                "serverTimezone=UTC&" +
+                "createDatabaseIfNotExist=true&" +
+                "useUnicode=true&characterEncoding=UTF-8" );
+        config.setUsername( "root" );
+        config.setPassword( "root" );
+        config.addDataSourceProperty( "cachePrepStmts" , "true" );
+        config.addDataSourceProperty( "prepStmtCacheSize" , "250" );
+        config.addDataSourceProperty( "prepStmtCacheSqlLimit" , "2048" );
+        return new HikariDataSource(config);
     }
 
     @Bean
