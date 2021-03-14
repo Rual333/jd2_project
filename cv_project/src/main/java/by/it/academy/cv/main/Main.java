@@ -1,21 +1,20 @@
 package by.it.academy.cv.main;
 
 import by.it.academy.cv.data.DaoConfiguration;
+import by.it.academy.cv.exeptions.IncorrectBuildingUsage;
+import by.it.academy.cv.exeptions.IncorrectEntityDefinitionExpression;
 import by.it.academy.cv.model.JobCandidate;
-import by.it.academy.cv.service.SQLBuilder;
-import by.it.academy.cv.service.SQLQueryToGetEntityWithParams;
-import by.it.academy.cv.service.entityscanner.*;
+import by.it.academy.cv.service.builder.SQLBuilder;
+import by.it.academy.cv.service.builder.SQLQueryAndParams;
 import by.it.academy.cv.service.JobCandidateService;
-import lombok.Setter;
+import by.it.academy.cv.service.entityscanner.EntitiesScannedInformation;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.Arrays;
 
 public class Main {
-    public static void main(String[] args) {
-
-
+    public static void main(String[] args) throws NoSuchFieldException, IncorrectEntityDefinitionExpression, IncorrectBuildingUsage {
         ApplicationContext context = new AnnotationConfigApplicationContext(DaoConfiguration.class);
 
         Arrays.stream(context.getBeanDefinitionNames()).forEach(System.out::println);
@@ -25,27 +24,24 @@ public class Main {
         JobCandidate jobCandidate = service.read(1L);
         System.out.println(jobCandidate);
 
-        EntityScanner es = new EntityScanner(JobCandidate.class);
-        System.out.println(es.toString());
-
-        EntityScannerOneToOneHandler esOneToOne = new EntityScannerOneToOneHandler(es);
-        System.out.println("One To One: " + esOneToOne.toString());
-
-        EntityScannerOneToManyHandler esOneToMany = new EntityScannerOneToManyHandler(es);
-        System.out.println("One To Many: " + esOneToMany);
-
-        EntityScannerManyToOneHandler esManyToOne = new EntityScannerManyToOneHandler(es);
-        System.out.println("Many To One: " + esManyToOne);
-
-        EntityScannerManyToManyHandler esManyToMany = new EntityScannerManyToManyHandler(es);
-        System.out.println("Many To Many: " + esManyToMany);
-
         SQLBuilder sqlBuilder = new SQLBuilder(JobCandidate.class);
-        sqlBuilder.createSelectFrom();
-        SQLQueryToGetEntityWithParams entityWithParams = sqlBuilder.build();
+        SQLQueryAndParams entityWithParams = sqlBuilder.build();
 
         System.out.println(entityWithParams.getQuery());
 
-        System.out.println(es.getEntityFields().toString());
+        System.out.println();
+
+        System.out.println(jobCandidate.getClass().getDeclaredField("gender").getDeclaringClass().getName());
+
+        StringBuilder sb = new StringBuilder("");
+
+        System.out.println(sb.length());
+
+        sb.append(" AND ");
+
+        System.out.println(sb.charAt(sb.length()-1));
+
+        EntitiesScannedInformation entitiesScannedInformation = new EntitiesScannedInformation(JobCandidate.class);
+        System.out.println(entitiesScannedInformation.getFieldsNamesToColumnsNamesMap().keySet());
     }
 }

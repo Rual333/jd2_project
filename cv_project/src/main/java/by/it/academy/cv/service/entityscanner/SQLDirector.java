@@ -1,6 +1,6 @@
 package by.it.academy.cv.service.entityscanner;
 
-import by.it.academy.cv.service.SQLBuilder;
+import by.it.academy.cv.service.builder.SQLBuilder;
 
 public class SQLDirector {
 

@@ -1,9 +1,6 @@
 package by.it.academy.cv.data;
 
-import by.it.academy.cv.model.Gender;
-import by.it.academy.cv.model.JobCandidate;
-import by.it.academy.cv.model.JobCandidateContact;
-import by.it.academy.cv.model.Technology;
+import by.it.academy.cv.model.*;
 import by.it.academy.cv.service.JobCandidateService;
 import com.mysql.cj.jdbc.Driver;
 import com.zaxxer.hikari.HikariConfig;
@@ -76,7 +73,8 @@ public class DaoConfiguration {
                 JobCandidate.class,
                 JobCandidateContact.class,
                 JobCandidateService.class,
-                Technology.class);
+                Technology.class
+        );
         Properties properties = new Properties();
         properties.setProperty("hibernate.show_sql", "true");
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL57Dialect");

@@ -31,10 +31,6 @@ public class JobCandidate {
     private String patronymic;
 
     @Column(name = "F_DATE_OF_BIRTH")
-//    @OneToOne()
-//    @MapsId
-//    @Embedded
-//    @PrimaryKeyJoinColumn
     private Date dateOfBirth;
 
     @ManyToOne
