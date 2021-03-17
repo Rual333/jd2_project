@@ -1,15 +1,15 @@
 package by.it.academy.cv.service.entityscanner;
 
 import by.it.academy.cv.exeptions.IncorrectEntityDefinitionExpression;
-import lombok.Getter;
-import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Table;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Map;
 
-@ToString
-@Getter
+
 public class EntityNamesScanner {
 
     public EntityNamesScanner() {

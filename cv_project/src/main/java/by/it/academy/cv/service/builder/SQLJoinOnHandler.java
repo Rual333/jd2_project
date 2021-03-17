@@ -11,11 +11,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-public class SQLBuilderJoinOnHandler {
+public class SQLJoinOnHandler {
 
 
     private final EntityNamesScanner entityNamesScanner;
-    private EntityFieldsScanner fieldClassScanner;
+    private final EntityFieldsScanner fieldClassScanner;
     private String tableName;
     private String primaryKeyName;
     private String relatedClassTableName;
@@ -24,7 +24,7 @@ public class SQLBuilderJoinOnHandler {
     private String inverseJoinColumnName;
     private Set<String> primaryKeyWithTableNames;
 
-    public SQLBuilderJoinOnHandler() {
+    public SQLJoinOnHandler() {
         entityNamesScanner = new EntityNamesScanner();
         fieldClassScanner = new EntityFieldsScanner();
         primaryKeyWithTableNames = new HashSet<>();
@@ -67,7 +67,7 @@ public class SQLBuilderJoinOnHandler {
     }
 
     public String getOneToManyCondition(Field field) throws IncorrectEntityDefinitionExpression {
-        final Class<?> fieldType = fieldClassScanner.getFieldClass(field);
+        final Class<?> fieldType = fieldClassScanner.getFieldType(field);
         tableName = entityNamesScanner.scanTableName(field.getDeclaringClass());
         relatedClassTableName = entityNamesScanner.scanTableName(fieldType);
         OneToMany annotation = field.getAnnotation(OneToMany.class);
@@ -84,6 +84,7 @@ public class SQLBuilderJoinOnHandler {
 
     public String getManyToOneCondition(Field field) throws IncorrectEntityDefinitionExpression {
         final Class<?> fieldType = field.getType();
+        ManyToOne annotation = field.getAnnotation(ManyToOne.class);
         tableName = entityNamesScanner.scanTableName(field.getDeclaringClass());
         relatedClassTableName = entityNamesScanner.scanTableName(fieldType);
         primaryKeyName = entityNamesScanner.scanJoinColumnName(field);
@@ -91,7 +92,7 @@ public class SQLBuilderJoinOnHandler {
     }
 
     public String getManyToManyCondition(Field field) throws IncorrectEntityDefinitionExpression {
-        final Class<?> fieldType = fieldClassScanner.getFieldClass(field);
+        final Class<?> fieldType = fieldClassScanner.getFieldType(field);
         ManyToMany annotation = field.getAnnotation(ManyToMany.class);
         tableName = entityNamesScanner.scanTableName(field.getDeclaringClass());
         relatedClassTableName = entityNamesScanner.scanTableName(fieldType);

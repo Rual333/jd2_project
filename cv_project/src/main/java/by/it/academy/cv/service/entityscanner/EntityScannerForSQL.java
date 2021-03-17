@@ -3,13 +3,14 @@ package by.it.academy.cv.service.entityscanner;
 import by.it.academy.cv.exeptions.IncorrectEntityDefinitionExpression;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.stereotype.Service;
 
+import javax.persistence.*;
 import java.lang.reflect.Field;
 import java.util.*;
 
-@Getter
-@ToString
-public class EntityScannerForSQL implements EntityScanner<ScannedEntityInformationForSQL> {
+@Service("entityScanner")
+public class EntityScannerForSQL implements EntityScanner {
 
     private EntityNamesScanner entityNamesScanner;
     private EntityFieldsScanner entityFieldsScanner;
@@ -18,7 +19,6 @@ public class EntityScannerForSQL implements EntityScanner<ScannedEntityInformati
     private Class<?> entityClass;
 
     private ScannedEntityInformationForSQL scannedInfo;
-
 
     public EntityScannerForSQL() {
         init();
@@ -42,10 +42,10 @@ public class EntityScannerForSQL implements EntityScanner<ScannedEntityInformati
     private void prepareToNewScan(Class<?> entityClass) throws IncorrectEntityDefinitionExpression {
         this.entityClass = entityClass;
         initNewQueueAndClassSet();
-        initNewScannedInfo();
+        SetRootIdAndTableNameToScannedInfo();
     }
 
-    private void initNewScannedInfo() throws IncorrectEntityDefinitionExpression {
+    private void SetRootIdAndTableNameToScannedInfo() throws IncorrectEntityDefinitionExpression {
 
         String rootIdName = entityNamesScanner.scanIdColumnName(entityClass);
         String rootTableName = entityNamesScanner.scanTableName(entityClass);
@@ -63,7 +63,27 @@ public class EntityScannerForSQL implements EntityScanner<ScannedEntityInformati
 
     private void scanEntity(Class<?> classFromQueue) {
         entityNamesScanner.scanAndAddToFieldsNamesToColumnsNamesMap(classFromQueue, scannedInfo.getFieldNameToColumnNameMap());
-        entityFieldsScanner.scanRelatedFieldsAndAddClassesToSet(classFromQueue, classQueue, scannedInfo.getAllRelatedFields(), classSet);
+        scanRelatedFieldsAndAddClassesToSet(classFromQueue, scannedInfo.getAllRelatedFields());
+
+    }
+
+    public void scanRelatedFieldsAndAddClassesToSet(Class<?> entityClass, List<Field> allFields) {
+        for (Field field : entityFieldsScanner.scanFields(entityClass)) {
+            final Class<?> fieldClass = entityFieldsScanner.getFieldType(field);
+            if (classSet.contains(fieldClass)) {
+                continue;
+            } else {
+                classSet.add(fieldClass);
+                classQueue.add(fieldClass);
+            }
+            if (field.isAnnotationPresent(OneToOne.class) ||
+                    field.isAnnotationPresent(OneToMany.class) ||
+                    field.isAnnotationPresent(ManyToOne.class) ||
+                    field.isAnnotationPresent(ManyToMany.class) ||
+                    field.isAnnotationPresent(Id.class)) {
+                allFields.add(field);
+            }
+        }
     }
 
 }

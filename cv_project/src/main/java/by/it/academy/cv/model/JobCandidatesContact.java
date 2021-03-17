@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @EqualsAndHashCode(exclude = {"jobCandidate"})
 @ToString(exclude = {"jobCandidate"})
-public class JobCandidateContact {
+public class JobCandidatesContact {
 
     @Id
     @GeneratedValue(generator = "uuid-generator")

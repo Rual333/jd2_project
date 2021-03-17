@@ -3,10 +3,9 @@ package by.it.academy.cv.model;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.*;
 import java.sql.Date;
 import java.util.List;
-
-import javax.persistence.*;
 
 @Entity
 @Table(name = "T_JOB_CANDIDATES")
@@ -47,5 +46,5 @@ public class JobCandidate {
     private List<Technology> technologies;
 
     @OneToMany(mappedBy = "jobCandidate", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<JobCandidateContact> contacts;
+    private List<JobCandidatesContact> contacts;
 }

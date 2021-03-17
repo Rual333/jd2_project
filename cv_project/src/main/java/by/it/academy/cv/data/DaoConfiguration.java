@@ -2,7 +2,7 @@ package by.it.academy.cv.data;
 
 import by.it.academy.cv.model.Gender;
 import by.it.academy.cv.model.JobCandidate;
-import by.it.academy.cv.model.JobCandidateContact;
+import by.it.academy.cv.model.JobCandidatesContact;
 import by.it.academy.cv.model.Technology;
 import by.it.academy.cv.service.JobCandidateService;
 import com.zaxxer.hikari.HikariConfig;
@@ -55,7 +55,7 @@ public class DaoConfiguration {
         localSessionFactoryBean.setAnnotatedClasses(
                 Gender.class,
                 JobCandidate.class,
-                JobCandidateContact.class,
+                JobCandidatesContact.class,
                 JobCandidateService.class,
                 Technology.class
         );

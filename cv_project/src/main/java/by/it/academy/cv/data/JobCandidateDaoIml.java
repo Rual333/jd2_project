@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-public class JobCandidateDaoIml implements Dao<JobCandidate, Long> {
+public class JobCandidateDaoIml implements Dao<JobCandidate, String> {
 
     private SessionFactory sessionFactory;
 
@@ -29,10 +29,21 @@ public class JobCandidateDaoIml implements Dao<JobCandidate, Long> {
 
     @Override
     @Transactional
-    public JobCandidate read(Long id) {
+    public JobCandidate read(String id) {
         final Session currentSession = sessionFactory.getCurrentSession();
         return currentSession.get(JobCandidate.class, id);
     }
 
+    @Transactional
+    public List<JobCandidate> readUsingQuery(String query){
+
+        final Session currentSession = sessionFactory.getCurrentSession();
+
+        return currentSession
+                .createSQLQuery(query)
+                .addEntity(JobCandidate.class)
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+                .list();
+    }
 
 }
