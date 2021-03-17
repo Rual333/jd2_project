@@ -1,6 +1,7 @@
 package by.it.academy.cv.model;
 
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.List;
@@ -15,9 +16,10 @@ import java.util.List;
 public class Technology {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "uuid-generator")
+    @GenericGenerator(name = "uuid-generator", strategy = "uuid")
     @Column(name="TECHNOLOGY_ID")
-    private Long technologyId;
+    private String technologyId;
 
     @Column(name = "F_TECHNOLOGY_NAME", nullable = false)
     private String technologyName;

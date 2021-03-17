@@ -4,6 +4,7 @@ import by.it.academy.cv.TestConfiguration;
 import by.it.academy.cv.exeptions.IncorrectBuildingUsage;
 import by.it.academy.cv.exeptions.IncorrectEntityDefinitionExpression;
 import by.it.academy.cv.model.JobCandidate;
+import by.it.academy.cv.model.Technology;
 import by.it.academy.cv.service.builder.QueryGenerator;
 import by.it.academy.cv.service.builder.SQLBuilder;
 import junit.framework.TestCase;
@@ -62,8 +63,8 @@ public class JobCandidateServiceTest extends TestCase {
         logger.info("Parameters: " + queryGenerator.getParams());
         assertEquals(1, list.size());
         JobCandidate result = (JobCandidate) list.get(0);
-        long resultId = result.getJobCandidateId();
-        assertEquals(3L, resultId);
+        String resultId = result.getJobCandidateId();
+        assertEquals("402881e478020e9b0178020ea3e70002", resultId);
     }
 
     @Test
@@ -74,11 +75,15 @@ public class JobCandidateServiceTest extends TestCase {
 
         //When
         SQLBuilder sqlBuilder = new SQLBuilder(JobCandidate.class);
+//        SQLBuilder sqlBuilder1 = new SQLBuilder(Technology.class);
+//        sqlBuilder1.build();
+//        System.out.println();
+//        System.out.println(sqlBuilder1.getResultQuery());
         sqlBuilder.like("lastName", "%ов")
                 .or()
                 .equal("genderName", "женщина");
 
-        System.out.println(sqlBuilder.getResultQuery());
+//        System.out.println(sqlBuilder.getResultQuery());
         QueryGenerator queryGenerator=new QueryGenerator(sqlBuilder);
         String result = queryGenerator.getResultQuery();
 

@@ -1,6 +1,7 @@
 package by.it.academy.cv.model;
 
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Date;
 import java.util.List;
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "T_JOB_CANDIDATES")
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -17,9 +19,10 @@ import javax.persistence.*;
 public class JobCandidate {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(generator = "uuid-generator")
+    @GenericGenerator(name = "uuid-generator", strategy = "uuid")
     @Column(name = "JOB_CANDIDATE_ID")
-    private Long jobCandidateId;
+    private String jobCandidateId;
 
     @Column(name = "F_FIRST_NAME", nullable = false)
     private String firstName;

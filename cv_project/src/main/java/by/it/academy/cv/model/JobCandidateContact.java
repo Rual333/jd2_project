@@ -2,6 +2,7 @@ package by.it.academy.cv.model;
 
 
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -15,9 +16,10 @@ import javax.persistence.*;
 public class JobCandidateContact {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "uuid-generator")
+    @GenericGenerator(name = "uuid-generator", strategy = "uuid")
     @Column(name="CONTACT_ID")
-    private Long jobCandidateContactId;
+    private String jobCandidateContactId;
 
     @Column(name = "F_CONTACT_NAME", nullable = false)
     private String jobCandidateContactName;
